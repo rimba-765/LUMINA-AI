@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUMINA AI - Business Intelligence</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
+        .card { background: white; border-radius: 24px; box-shadow: 0 4px 20px -2px rgba(0,0,0,0.05); border: 1px solid rgba(226, 232, 240, 0.8); }
+        .nav-active { color: #6366f1; position: relative; }
+        .nav-active::after { content: ''; position: absolute; bottom: 0; left: 25%; width: 50%; height: 3px; background: #6366f1; border-radius: 10px; }
+        .gradient-bg { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="pb-28">
+
+    <!-- Header Utama -->
+    <header class="bg-white/80 backdrop-blur-md border-b sticky top-0 z-50 px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <div class="gradient-bg p-2 rounded-xl shadow-lg shadow-indigo-100">
+                <i class="fas fa-brain text-white text-lg"></i>
+            </div>
+            <div>
+                <h1 class="text-lg font-black text-slate-900 tracking-tight">LUMINA <span class="text-indigo-600">AI</span></h1>
+                <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Mbah Marto Intelligence</p>
+            </div>
+        </div>
+        <div id="sync-status" class="bg-amber-50 text-amber-600 px-3 py-1 rounded-full text-[10px] font-bold border border-amber-100">
+            <i class="fas fa-circle text-[8px] animate-pulse mr-1"></i> MENGHUBUNGKAN...
+        </div>
+    </header>
+
+    <!-- Menu Navigasi -->
+    <nav class="flex overflow-x-auto bg-white border-b sticky top-[69px] z-40 no-scrollbar">
+        <button onclick="switchTab('overview')" id="tab-overview" class="px-6 py-4 whitespace-nowrap font-bold text-xs nav-active transition-all uppercase">Ringkasan</button>
+        <button onclick="switchTab('health')" id="tab-health" class="px-6 py-4 whitespace-nowrap font-bold text-xs text-slate-400 transition-all uppercase">Audit Data</button>
+        <button onclick="switchTab('ai')" id="tab-ai" class="px-6 py-4 whitespace-nowrap font-bold text-xs text-slate-400 transition-all uppercase">AI Engine</button>
+    </nav>
+
+    <main class="p-6 max-w-4xl mx-auto space-y-6">
+        
+        <!-- Tab: Ringkasan -->
+        <div id="content-overview" class="tab-content space-y-6">
+            <div class="grid grid-cols-2 gap-4">
+                <div class="card p-5">
+                    <p class="text-[10px] text-slate-400 font-bold mb-1 uppercase tracking-wider">Kas Bersih (Tangan)</p>
+                    <h2 id="val-today-sales" class="text-xl font-black text-slate-800 tracking-tight text-indigo-600 italic tracking-tighter">Memuat...</h2>
+                    <p class="text-[9px] text-slate-400 mt-2 font-medium">Data real-time</p>
+                </div>
+                <div class="card p-5">
+                    <p class="text-[10px] text-slate-400 font-bold mb-1 uppercase tracking-wider">Target Profit</p>
+                    <h2 id="val-prediction" class="text-xl font-black text-slate-800 tracking-tight">Rp 4.5 Jt</h2>
+                    <p class="text-[9px] text-emerald-500 font-bold mt-2 italic">Goal Bulanan</p>
+                </div>
+            </div>
+
+            <!-- Grafik -->
+            <div class="card p-6">
+                <h3 class="font-black text-slate-800 text-xs mb-6 uppercase tracking-widest flex items-center gap-2">
+                    <i class="fas fa-chart-area text-indigo-500"></i> Performa Pendapatan
+                </h3>
+                <div class="h-[200px]">
+                    <canvas id="salesChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Kartu AI Insight -->
+            <div class="card p-6 bg-slate-900 border-none shadow-2xl shadow-indigo-200 relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 opacity-10">
+                    <i class="fas fa-robot text-6xl text-white"></i>
+                </div>
+                <div class="flex gap-4 relative z-10">
+                    <div class="bg-indigo-500/20 p-3 rounded-2xl h-fit border border-indigo-500/30">
+                        <i class="fas fa-bolt-lightning text-indigo-400 text-xl"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-sm mb-1 text-white tracking-tight">Gemini Audit Insight</h4>
+                        <p id="ai-insight" class="text-[11px] text-slate-400 leading-relaxed italic">Menghubungkan ke AI_CHAT di spreadsheet...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Audit Data -->
+        <div id="content-health" class="tab-content hidden space-y-4">
+            <h3 class="font-black text-lg text-slate-900 tracking-tight mb-2 uppercase tracking-tighter">Detail Transaksi Dashboard</h3>
+            
+            <div class="card p-6 border-l-4 border-l-indigo-500">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Pendapatan (Gross)</span>
+                    <span id="health-sales" class="font-black text-indigo-600 tracking-tight text-lg">Rp 0</span>
+                </div>
+                <div class="w-full bg-slate-100 h-2 rounded-full">
+                    <div id="bar-sales" class="gradient-bg h-full" style="width: 100%"></div>
+                </div>
+            </div>
+
+            <div class="card p-6 border-l-4 border-l-amber-500">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Pengeluaran Operasional</span>
+                    <span id="health-opex" class="font-black text-amber-600 tracking-tight text-lg">Rp 0</span>
+                </div>
+                <div class="w-full bg-slate-100 h-2 rounded-full">
+                    <div id="bar-opex" class="bg-amber-500 h-full" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <div class="card p-6 border-l-4 border-l-emerald-500">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Laba Bersih Terhitung</span>
+                    <span id="health-profit" class="font-black text-emerald-600 tracking-tight text-lg">Rp 0</span>
+                </div>
+                <div class="w-full bg-slate-100 h-2 rounded-full">
+                    <div id="bar-profit" class="bg-emerald-500 h-full" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Menu Bawah -->
+    <div class="fixed bottom-6 left-6 right-6 bg-white/90 backdrop-blur-xl border border-slate-200 flex justify-around items-center py-4 rounded-[32px] shadow-2xl z-50">
+        <button onclick="switchTab('overview')" class="flex flex-col items-center gap-1 text-indigo-600 nav-btn" id="btn-overview">
+            <i class="fas fa-home-alt text-xl"></i>
+        </button>
+        <button onclick="switchTab('health')" class="flex flex-col items-center gap-1 text-slate-300 nav-btn" id="btn-health">
+            <i class="fas fa-file-invoice-dollar text-xl"></i>
+        </button>
+        <button onclick="switchTab('ai')" class="flex flex-col items-center gap-1 text-slate-300 nav-btn" id="btn-ai">
+            <i class="fas fa-wand-sparkles text-xl"></i>
+        </button>
+    </div>
+
+    <script>
+        /**
+         * PENTING: Ganti nilai SCRIPT_URL di bawah ini dengan URL Web App Anda.
+         */
+        const SCRIPT_URL = "GANTI_DENGAN_URL_WEB_APP_ANDA";
+
+        let salesChart;
+
+        async function fetchData() {
+            const syncStatus = document.getElementById('sync-status');
+            
+            if (!SCRIPT_URL || SCRIPT_URL.includes("https://script.google.com/macros/s/AKfycbyas-YblMW0lEh38wFrr559DVe7ZCsZwanigisedqoaU3k557NP0O5FODCJk-frpuAp/exec")) {
+                useMockData("Mode Demo: Link Apps Script Belum Dipasang");
+                return;
+            }
+
+            try {
+                const response = await fetch(SCRIPT_URL);
+                if (!response.ok) throw new Error('Gagal memuat data');
+                const data = await response.json();
+                
+                syncStatus.innerHTML = '<i class="fas fa-circle text-[8px] mr-1"></i> TERHUBUNG';
+                syncStatus.className = "bg-emerald-50 text-emerald-600 px-3 py-1 rounded-full text-[10px] font-bold border border-emerald-100";
+                
+                updateUI(data);
+            } catch (error) {
+                console.error(error);
+                useMockData("⚠️ Koneksi Error: Cek Deployment Apps Script");
+            }
+        }
+
+        function useMockData(message) {
+            const syncStatus = document.getElementById('sync-status');
+            syncStatus.innerHTML = `<i class="fas fa-info-circle mr-1"></i> ${message}`;
+            
+            const mock = {
+                todaySales: 5750000,
+                monthlySales: 165000000,
+                prediction: 4500000,
+                cogsPercent: 32,
+                opexAmount: 52000000,
+                chartData: [4500000, 5100000, 5750000],
+                insight: "Ini adalah tampilan demo. Hubungkan URL Google Apps Script Anda untuk melihat data asli dari Mbah Marto."
+            };
+            updateUI(mock);
+        }
+
+        function updateUI(data) {
+            document.getElementById('val-today-sales').innerText = "Rp " + data.todaySales.toLocaleString('id-ID');
+            document.getElementById('ai-insight').innerText = data.insight;
+            document.getElementById('health-sales').innerText = "Rp " + data.monthlySales.toLocaleString('id-ID');
+            document.getElementById('health-opex').innerText = "Rp " + data.opexAmount.toLocaleString('id-ID');
+            document.getElementById('health-profit').innerText = "Rp " + (data.monthlySales - data.opexAmount).toLocaleString('id-ID');
+            
+            const ratio = data.monthlySales > 0 ? (data.opexAmount / data.monthlySales) * 100 : 0;
+            document.getElementById('bar-opex').style.width = Math.min(ratio, 100) + "%";
+            document.getElementById('bar-profit').style.width = Math.max(0, 100 - ratio) + "%";
+
+            updateChart(data.chartData);
+        }
+
+        function updateChart(dataPoints) {
+            const ctx = document.getElementById('salesChart').getContext('2d');
+            if (salesChart) salesChart.destroy();
+            salesChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['H-2', 'H-1', 'Hari Ini'],
+                    datasets: [{
+                        data: dataPoints,
+                        borderColor: '#6366f1',
+                        borderWidth: 4,
+                        pointRadius: 5,
+                        pointBackgroundColor: '#fff',
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { display: false }, x: { grid: { display: false }, ticks: { font: { size: 10, weight: 'bold' }, color: '#94a3b8' } } }
+                }
+            });
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById('content-' + tabId).classList.remove('hidden');
+            document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('nav-active', 'text-indigo-600'));
+            document.getElementById('tab-' + tabId).classList.add('nav-active', 'text-indigo-600');
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('text-indigo-600', 'text-slate-300'));
+            document.getElementById('btn-' + tabId).classList.add('text-indigo-600');
+        }
+
+        window.addEventListener('load', fetchData);
+    </script>
+</body>
+</html>
